@@ -1,3 +1,5 @@
+using ftrip.io.booking_service.Persistance;
+using ftrip.io.framework.Persistence.Sql.Migrations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +15,10 @@ namespace ftrip.io.booking_service
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args)
+                .Build()
+                .MigrateDbContext<DatabaseContext>()
+                .Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

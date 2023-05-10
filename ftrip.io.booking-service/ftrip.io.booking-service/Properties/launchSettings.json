@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,10 +20,26 @@
     "ftrip.io.booking_service": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "launchUrl": "swagger/index.html",
+      "applicationUrl": "https://localhost:5006;http://localhost:4995",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DB_SERVER": "localhost",
+        "DB_PORT": "3306",
+        "DB_DATABASE": "booking_db",
+        "DB_USER": "root",
+        "DB_PASSWORD": "mypass",
+
+        "RMQ_SERVER": "localhost",
+        "RMQ_PORT": "5672",
+        "RMQ_USER": "user",
+        "RMQ_PASSWORD": "password",
+
+        "API_PREFIX": "",
+
+        "API_PROXY_URL": "http://localhost:3000",
+
+        "JWT_SECRET": "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING"
       }
     }
   }
