@@ -42,6 +42,7 @@ namespace ftrip.io.booking_service
 
             InstallerCollection.With(
                 new SwaggerInstaller<Startup>(services),
+                new HealthCheckUIInstaller(services),
                 new AutoMapperInstaller<Startup>(services),
                 new FluentValidationInstaller<Startup>(services),
                 new GlobalizationInstaller<Startup>(services),
