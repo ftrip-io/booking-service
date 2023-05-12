@@ -5,14 +5,14 @@ on:
       - develop
       - master
 jobs:
-  buld:
+  build:
     runs-on: ubuntu-latest
     env:
-      NUGET_PACKAGES: ${{ github.workspace }}//ftrip.io.booking-service/.nuget/packages
+      NUGET_PACKAGES: ${{ github.workspace }}/ftrip.io.booking-service/.nuget/packages
       DOTNET_INSTALL_DIR: ./.dotnet
       CONFIGURATION: Release
     steps:
-      - uses: action/chechout@v3
+      - uses: actions/checkout@v3
 
       - name: Cache .NET 3.1
         id: cache-dotnet
@@ -34,7 +34,7 @@ jobs:
           path: ./.tools/reportgenerator
           key: ${{ runner.os }}-dotnet-reportgenerator
 
-      - name: Install .NET ReportGenerator
+      -- name: Install .NET ReportGenerator
         if: steps.cache-dotnet-reportgenerator.outputs.cache-hit != 'true'
         run: |
           dotnet tool install dotnet-reportgenerator-globaltool --tool-path ./.tools/reportgenerator
