@@ -34,7 +34,7 @@ jobs:
           path: ./.tools/reportgenerator
           key: ${{ runner.os }}-dotnet-reportgenerator
 
-      -- name: Install .NET ReportGenerator
+      - name: Install .NET ReportGenerator
         if: steps.cache-dotnet-reportgenerator.outputs.cache-hit != 'true'
         run: |
           dotnet tool install dotnet-reportgenerator-globaltool --tool-path ./.tools/reportgenerator
