@@ -1,3 +1,4 @@
+using ftrip.io.booking_service.Installers;
 using ftrip.io.booking_service.Persistance;
 using ftrip.io.framework.auth;
 using ftrip.io.framework.CQRS;
@@ -13,16 +14,10 @@ using ftrip.io.framework.Swagger;
 using ftrip.io.framework.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ftrip.io.booking_service
 {
@@ -51,7 +46,8 @@ namespace ftrip.io.booking_service
                 new MariadbInstaller<DatabaseContext>(services),
                 new MariadbHealthCheckInstaller(services),
                 new CQRSInstaller<Startup>(services),
-                new RabbitMQInstaller<Startup>(services, RabbitMQInstallerType.Publisher | RabbitMQInstallerType.Consumer)
+                new RabbitMQInstaller<Startup>(services, RabbitMQInstallerType.Publisher | RabbitMQInstallerType.Consumer),
+                new DependenciesInstaller(services)
             ).Install();
         }
 
