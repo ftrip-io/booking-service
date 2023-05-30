@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-	<PackageReference Include="ftrip.io.framework" Version="2.4.1" />
-	<PackageReference Include="ftrip.io.framework.auth" Version="2.4.1" />
-	<PackageReference Include="ftrip.io.framework.messaging" Version="2.4.1" />
+	<PackageReference Include="ftrip.io.framework" Version="2.6.1" />
+	<PackageReference Include="ftrip.io.framework.auth" Version="2.6.1" />
+	<PackageReference Include="ftrip.io.framework.messaging" Version="2.6.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ftrip.io.catalog-service.contracts" Version="1.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.32">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -34,6 +35,10 @@
 	  <EmbeddedResource Update="Resources\Strings.resx">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <PropertyGroup>

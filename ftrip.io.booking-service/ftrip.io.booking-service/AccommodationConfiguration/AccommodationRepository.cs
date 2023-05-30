@@ -21,7 +21,7 @@ namespace ftrip.io.booking_service.AccommodationConfiguration
 
         public async Task<Accommodation> ReadByAccommodationId(Guid accommodationId, CancellationToken cancellationToken = default)
         {
-            return await _entities.FirstAsync(a => a.AccommodationId == accommodationId, cancellationToken);
+            return await _entities.FirstOrDefaultAsync(a => a.AccommodationId == accommodationId, cancellationToken);
         }
     }
 }

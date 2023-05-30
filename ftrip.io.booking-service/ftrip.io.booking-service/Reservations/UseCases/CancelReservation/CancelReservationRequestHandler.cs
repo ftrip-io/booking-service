@@ -1,4 +1,5 @@
-﻿using ftrip.io.booking_service.contracts.Reservations.Events;
+﻿using ftrip.io.booking_service.AccommodationConfiguration;
+using ftrip.io.booking_service.contracts.Reservations.Events;
 using ftrip.io.booking_service.Reservations.Domain;
 using ftrip.io.framework.ExceptionHandling.Exceptions;
 using ftrip.io.framework.Globalization;
@@ -15,17 +16,20 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IReservationRepository _reservationRepository;
+        private readonly IAccommodationQueryHelper _accommodationQueryHelper;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IStringManager _stringManager;
 
         public CancelReservationRequestHandler(
             IUnitOfWork unitOfWork, 
             IReservationRepository reservationRepository,
+            IAccommodationQueryHelper accommodationQueryHelper,
             IMessagePublisher messagePublisher,
             IStringManager stringManager)
         {
             _unitOfWork = unitOfWork;
             _reservationRepository = reservationRepository;
+            _accommodationQueryHelper = accommodationQueryHelper;
             _messagePublisher = messagePublisher;
             _stringManager = stringManager;
         }
@@ -75,11 +79,14 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
 
         private async Task PublishReservationCanceledEvent(Reservation reservation, CancellationToken cancellationToken)
         {
+            var accomodation = await _accommodationQueryHelper.ReadOrThrow(reservation.AccomodationId, cancellationToken);
+
             var reservationCanceled = new ReservationCanceledEvent()
             {
                 ReservationId = reservation.Id,
                 AccomodationId = reservation.AccomodationId,
                 GuestId = reservation.GuestId,
+                HostId = accomodation.HostId,
             };
 
             await _messagePublisher.Send<ReservationCanceledEvent, string>(reservationCanceled, cancellationToken);

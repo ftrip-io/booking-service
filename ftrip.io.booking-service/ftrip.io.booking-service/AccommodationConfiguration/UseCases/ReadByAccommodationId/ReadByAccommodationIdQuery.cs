@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using ftrip.io.booking_service.AccommodationConfiguration.Domain;
+﻿using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using MediatR;
 using System;
 

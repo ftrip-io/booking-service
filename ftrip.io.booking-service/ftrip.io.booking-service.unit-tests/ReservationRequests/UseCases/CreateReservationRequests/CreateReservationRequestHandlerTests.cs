@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using ftrip.io.booking_service.AccommodationConfiguration;
+using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.booking_service.Common.Domain;
 using ftrip.io.booking_service.contracts.ReservationRequests.Events;
 using ftrip.io.booking_service.ReservationRequests;
@@ -23,6 +25,7 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>();
         private readonly Mock<IReservationRequestRepository> _reservationRequestRepositoryMock = new Mock<IReservationRequestRepository>();
         private readonly Mock<IReservationRepository> _reservationRepositoryMock = new Mock<IReservationRepository>();
+        private readonly Mock<IAccommodationQueryHelper> _accommodationQueryHelperMock = new Mock<IAccommodationQueryHelper>();
         private readonly Mock<IMessagePublisher> _messagePublisherMock = new Mock<IMessagePublisher>();
         private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
 
@@ -40,12 +43,31 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
                 _unitOfWorkMock.Object,
                 _reservationRequestRepositoryMock.Object,
                 _reservationRepositoryMock.Object,
+                _accommodationQueryHelperMock.Object,
                 mapper,
                 _messagePublisherMock.Object,
                 _stringManagerMock.Object
             );
         }
 
+        [Fact]
+        public void Handle_AccommodationDoesNotExists_ThrowsMissingEntityException()
+        {
+            // Arrange
+            var request = GetCreateReservationRequest();
+
+            _accommodationQueryHelperMock
+                .Setup(qh => qh.ReadOrThrow(It.Is<Guid>(id => id == request.AccomodationId), It.IsAny<CancellationToken>()))
+                .Throws(new MissingEntityException());
+
+            // Act
+            Func<Task> handleAction = () => _handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            handleAction.Should().ThrowExactlyAsync<MissingEntityException>();
+            _unitOfWorkMock.Verify(uow => uow.Commit(It.IsAny<CancellationToken>()), Times.Never);
+
+        }
         [Fact]
         public void Handle_ReservationDateIsAlreadyTaken_ThrowsBadLogicException()
         {
@@ -81,6 +103,13 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
                     r.Id = Guid.NewGuid();
                     return Task.FromResult(r);
                 });
+
+            _accommodationQueryHelperMock
+                .Setup(qh => qh.ReadOrThrow(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new Accommodation()
+                {
+                    HostId = Guid.NewGuid()
+                }));
 
             // Act
             var createdReservationRequest = await _handler.Handle(request, CancellationToken.None);

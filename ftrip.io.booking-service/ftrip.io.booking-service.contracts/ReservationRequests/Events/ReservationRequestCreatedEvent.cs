@@ -8,6 +8,8 @@ namespace ftrip.io.booking_service.contracts.ReservationRequests.Events
     {
         public Guid ReservationRequestId { get; set; }
         public Guid AccommodationId { get; set; }
+        public Guid HostId { get; set; }
+        public Guid GuestId { get; set; }
 
         public ReservationRequestCreatedEvent()
         {

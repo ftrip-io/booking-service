@@ -7,6 +7,7 @@ namespace ftrip.io.booking_service.contracts.Reservations.Events
     {
         public Guid ReservationId { get; set; }
         public Guid AccomodationId { get; set; }
+        public Guid HostId { get; set; }
         public Guid GuestId { get; set; }
 
         public ReservationCanceledEvent()

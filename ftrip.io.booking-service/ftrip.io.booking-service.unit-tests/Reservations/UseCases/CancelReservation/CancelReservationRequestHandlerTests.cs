@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using ftrip.io.booking_service.AccommodationConfiguration;
+using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.booking_service.Common.Domain;
 using ftrip.io.booking_service.contracts.Reservations.Events;
 using ftrip.io.booking_service.Reservations;
@@ -20,6 +22,7 @@ namespace ftrip.io.booking_service.unit_tests.Reservations.UseCases.CancelReserv
     {
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>();
         private readonly Mock<IReservationRepository> _reservationRepositoryMock = new Mock<IReservationRepository>();
+        private readonly Mock<IAccommodationQueryHelper> _accommodationQueryHelperMock = new Mock<IAccommodationQueryHelper>();
         private readonly Mock<IMessagePublisher> _messagePublisherMock = new Mock<IMessagePublisher>();
         private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
 
@@ -30,6 +33,7 @@ namespace ftrip.io.booking_service.unit_tests.Reservations.UseCases.CancelReserv
             _handler = new CancelReservationRequestHandler(
                 _unitOfWorkMock.Object,
                 _reservationRepositoryMock.Object,
+                _accommodationQueryHelperMock.Object,
                 _messagePublisherMock.Object,
                 _stringManagerMock.Object
             );
@@ -100,6 +104,13 @@ namespace ftrip.io.booking_service.unit_tests.Reservations.UseCases.CancelReserv
             _reservationRepositoryMock
                 .Setup(r => r.Update(It.IsAny<Reservation>(), It.IsAny<CancellationToken>()))
                 .Returns((Reservation r, CancellationToken _) => Task.FromResult(r));
+
+            _accommodationQueryHelperMock
+                .Setup(qh => qh.ReadOrThrow(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new Accommodation()
+                {
+                    HostId = Guid.NewGuid()
+                }));
 
             // Act
             var canceledReservation = await _handler.Handle(request, CancellationToken.None);

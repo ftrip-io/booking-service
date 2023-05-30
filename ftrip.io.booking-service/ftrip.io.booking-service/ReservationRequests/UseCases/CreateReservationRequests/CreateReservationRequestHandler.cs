@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ftrip.io.booking_service.AccommodationConfiguration;
 using ftrip.io.booking_service.Common.Domain;
 using ftrip.io.booking_service.contracts.ReservationRequests.Events;
 using ftrip.io.booking_service.ReservationRequests.Domain;
@@ -8,6 +9,7 @@ using ftrip.io.framework.Globalization;
 using ftrip.io.framework.messaging.Publisher;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +19,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IReservationRequestRepository _reservationRequestRepository;
+        private readonly IAccommodationQueryHelper _accommodationQueryHelper;
         private readonly IReservationRepository _reservationRepository;
         private readonly IMapper _mapper;
         private readonly IMessagePublisher _messagePublisher;
@@ -26,12 +29,14 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
             IUnitOfWork unitOfWork, 
             IReservationRequestRepository reservationRequestRepository,
             IReservationRepository reservationRepository,
+            IAccommodationQueryHelper accommodationQueryHelper,
             IMapper mapper,
             IMessagePublisher messagePublisher,
             IStringManager stringManager)
         {
             _unitOfWork = unitOfWork;
             _reservationRequestRepository = reservationRequestRepository;
+            _accommodationQueryHelper = accommodationQueryHelper;
             _reservationRepository = reservationRepository;
             _mapper = mapper;
             _messagePublisher = messagePublisher;
@@ -40,6 +45,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
         
         public async Task<ReservationRequest> Handle(CreateReservationRequest request, CancellationToken cancellationToken)
         {
+            var accomodation = await _accommodationQueryHelper.ReadOrThrow(request.AccomodationId, cancellationToken);
             await Validate(request, cancellationToken);
 
             await _unitOfWork.Begin(cancellationToken);
@@ -50,7 +56,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
 
             await _unitOfWork.Commit(cancellationToken);
 
-            await PublishReservationRequestCreatedEvent(createdReservationRequest, cancellationToken);
+            await PublishReservationRequestCreatedEvent(accomodation.HostId, createdReservationRequest, cancellationToken);
 
             return createdReservationRequest;
         }
@@ -71,12 +77,14 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
             return await _reservationRequestRepository.Create(request, cancellationToken);
         }
 
-        private async Task PublishReservationRequestCreatedEvent(ReservationRequest reservationRequest, CancellationToken cancellationToken)
+        private async Task PublishReservationRequestCreatedEvent(Guid hostId, ReservationRequest reservationRequest, CancellationToken cancellationToken)
         {
             var requestCreated = new ReservationRequestCreatedEvent() 
             { 
                 ReservationRequestId = reservationRequest.Id,
-                AccommodationId = reservationRequest.AccomodationId
+                AccommodationId = reservationRequest.AccomodationId,
+                HostId = hostId,
+                GuestId = reservationRequest.GuestId,
             };
 
             await _messagePublisher.Send<ReservationRequestCreatedEvent, string>(requestCreated, cancellationToken);

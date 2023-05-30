@@ -1,6 +1,7 @@
 using ftrip.io.booking_service.Installers;
 using ftrip.io.booking_service.Persistance;
 using ftrip.io.framework.auth;
+using ftrip.io.framework.Correlation;
 using ftrip.io.framework.CQRS;
 using ftrip.io.framework.ExceptionHandling.Extensions;
 using ftrip.io.framework.Globalization;
@@ -9,14 +10,17 @@ using ftrip.io.framework.Installers;
 using ftrip.io.framework.Mapping;
 using ftrip.io.framework.messaging.Installers;
 using ftrip.io.framework.Persistence.Sql.Mariadb;
+using ftrip.io.framework.Proxies;
 using ftrip.io.framework.Secrets;
 using ftrip.io.framework.Swagger;
+using ftrip.io.framework.Tracing;
 using ftrip.io.framework.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using System;
 
 namespace ftrip.io.booking_service
@@ -47,7 +51,15 @@ namespace ftrip.io.booking_service
                 new MariadbHealthCheckInstaller(services),
                 new CQRSInstaller<Startup>(services),
                 new RabbitMQInstaller<Startup>(services, RabbitMQInstallerType.Publisher | RabbitMQInstallerType.Consumer),
-                new DependenciesInstaller(services)
+                new DependenciesInstaller(services),
+                new CorrelationInstaller(services),
+                new TracingInstaller(services, (tracingSettings) =>
+                {
+                    tracingSettings.ApplicationLabel = "booking";
+                    tracingSettings.ApplicationVersion = GetType().Assembly.GetName().Version?.ToString() ?? "unknown";
+                    tracingSettings.MachineName = Environment.MachineName;
+                }),
+                new ProxyGeneratorInstaller(services)
             ).Install();
         }
 
@@ -58,6 +70,8 @@ namespace ftrip.io.booking_service
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
 
@@ -72,6 +86,7 @@ namespace ftrip.io.booking_service
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseCorrelation();
             app.UseFtripioGlobalExceptionHandler();
 
             app.UseEndpoints(endpoints =>

@@ -35,6 +35,7 @@ namespace ftrip.io.booking_service.AccommodationConfiguration.UseCases.CreateAcc
             var createAccommodation = new Accommodation()
             {
                 AccommodationId = request.AccommodationId,
+                HostId = request.HostId,
                 IsManualAccept = true
             };
 

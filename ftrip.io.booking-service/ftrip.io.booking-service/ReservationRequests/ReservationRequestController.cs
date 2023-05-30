@@ -2,6 +2,7 @@
 using ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservationRequests;
 using ftrip.io.booking_service.ReservationRequests.UseCases.DeclineReservationRequests;
 using ftrip.io.booking_service.ReservationRequests.UseCases.DeleteReservationRequests;
+using ftrip.io.booking_service.ReservationRequests.UseCases.ReadReservationRequest;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -20,6 +21,12 @@ namespace ftrip.io.booking_service.ReservationRequests
         public ReservationRequestController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search([FromQuery] ReadReservationRequestQuery query, CancellationToken cancellationToken = default)
+        {
+            return Ok(await _mediator.Send(query, cancellationToken));
         }
 
         [HttpPost]

@@ -7,5 +7,7 @@ namespace ftrip.io.booking_service.AccommodationConfiguration.UseCases.CreateAcc
     public class CreateAccommodationRequest : IRequest<Accommodation>
     {
         public Guid AccommodationId { get; set; }
+
+        public Guid HostId { get; set; }
     }
 }

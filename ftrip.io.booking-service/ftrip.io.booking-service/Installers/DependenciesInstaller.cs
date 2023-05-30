@@ -22,6 +22,7 @@ namespace ftrip.io.booking_service.Installers
             _services.AddScoped<IReservationRepository, ReservationRepository>();
             _services.AddScoped<IReservationRequestQueryHelper, ReservationRequestQueryHelper>();
             _services.AddScoped<IAccommodationRepository, AccommodationRepository>();
+            _services.AddScoped<IAccommodationQueryHelper, AccommodationQueryHelper>();
         }
     }
 }
