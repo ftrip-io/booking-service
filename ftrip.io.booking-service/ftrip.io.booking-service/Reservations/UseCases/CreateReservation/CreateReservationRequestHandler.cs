@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using ftrip.io.booking_service.ReservationRequests.Domain;
 using ftrip.io.booking_service.Reservations.Domain;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,15 +13,18 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CreateReservation
         private readonly IUnitOfWork _unitOfWork;
         private readonly IReservationRepository _reservationRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
         public CreateReservationRequestHandler(
-            IUnitOfWork unitOfWork, 
-            IReservationRepository reservationRepository, 
-            IMapper mapper)
+            IUnitOfWork unitOfWork,
+            IReservationRepository reservationRepository,
+            IMapper mapper,
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _reservationRepository = reservationRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<Reservation> Handle(CreateReservationRequest request, CancellationToken cancellationToken)
@@ -31,7 +34,7 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CreateReservation
             var reservation = _mapper.Map<Reservation>(request);
 
             var createdReservation = await CreateReservation(reservation, cancellationToken);
-        
+
             await _unitOfWork.Commit(cancellationToken);
 
             return createdReservation;
@@ -41,7 +44,14 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CreateReservation
         {
             reservation.IsCancelled = false;
 
-            return await _reservationRepository.Create(reservation, cancellationToken);
+            var createdReservation = await _reservationRepository.Create(reservation, cancellationToken);
+
+            _logger.Information(
+                "Reservation created - ReservationId[{ReservationId}], GuestId[{GuestId}], AccommodationId[{AccommodationId}]",
+                createdReservation.Id, createdReservation.GuestId, createdReservation.AccomodationId
+            );
+
+            return createdReservation;
         }
     }
 }

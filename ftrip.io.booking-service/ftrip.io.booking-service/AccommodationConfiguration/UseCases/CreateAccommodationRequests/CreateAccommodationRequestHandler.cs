@@ -1,6 +1,7 @@
 ﻿using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,13 +11,16 @@ namespace ftrip.io.booking_service.AccommodationConfiguration.UseCases.CreateAcc
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAccommodationRepository _accommodationRepository;
+        private readonly ILogger _logger;
 
         public CreateAccommodationRequestHandler(
-            IUnitOfWork unitOfWork, 
-            IAccommodationRepository accommodationRepository)
+            IUnitOfWork unitOfWork,
+            IAccommodationRepository accommodationRepository,
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _accommodationRepository = accommodationRepository;
+            _logger = logger;
         }
 
         public async Task<Accommodation> Handle(CreateAccommodationRequest request, CancellationToken cancellationToken)
@@ -39,7 +43,14 @@ namespace ftrip.io.booking_service.AccommodationConfiguration.UseCases.CreateAcc
                 IsManualAccept = true
             };
 
-            return await _accommodationRepository.Create(createAccommodation, cancellationToken);
+            var createdAccommodation = await _accommodationRepository.Create(createAccommodation, cancellationToken);
+
+            _logger.Information(
+                "Accommodation Configuration created - AccommodationId[{AccommodationId}], HostId[{HostId}], ManualAccept[{ManualAccept}]",
+                createAccommodation.AccommodationId, createAccommodation.HostId, createAccommodation.IsManualAccept
+            );
+
+            return createdAccommodation;
         }
     }
 }

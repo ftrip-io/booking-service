@@ -13,6 +13,7 @@ using ftrip.io.framework.Globalization;
 using ftrip.io.framework.messaging.Publisher;
 using ftrip.io.framework.Persistence.Contracts;
 using Moq;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
         private readonly Mock<IAccommodationQueryHelper> _accommodationQueryHelperMock = new Mock<IAccommodationQueryHelper>();
         private readonly Mock<IMessagePublisher> _messagePublisherMock = new Mock<IMessagePublisher>();
         private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
+        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
         private readonly CreateReservationRequestHandler _handler;
 
@@ -46,7 +48,8 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
                 _accommodationQueryHelperMock.Object,
                 mapper,
                 _messagePublisherMock.Object,
-                _stringManagerMock.Object
+                _stringManagerMock.Object,
+                _loggerMock.Object
             );
         }
 
@@ -66,8 +69,8 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
             // Assert
             handleAction.Should().ThrowExactlyAsync<MissingEntityException>();
             _unitOfWorkMock.Verify(uow => uow.Commit(It.IsAny<CancellationToken>()), Times.Never);
-
         }
+
         [Fact]
         public void Handle_ReservationDateIsAlreadyTaken_ThrowsBadLogicException()
         {

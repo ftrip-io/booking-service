@@ -1,6 +1,8 @@
 ﻿using ftrip.io.booking_service.AccommodationConfiguration.UseCases.ChangeAccommodationConfigurationRequests;
 using ftrip.io.booking_service.AccommodationConfiguration.UseCases.ReadByAccommodationId;
+using ftrip.io.booking_service.AccommodationConfiguration.UseCases.ReadByHostId;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
@@ -19,12 +21,20 @@ namespace ftrip.io.booking_service.AccommodationConfiguration
             _mediator = mediator;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ReadByHost(Guid hostId, CancellationToken cancellationToken = default)
+        {
+            return Ok(await _mediator.Send(new ReadByHostIdQuery() { HostId = hostId }, cancellationToken));
+        }
+
+        [Authorize(Roles = "Host")]
         [HttpGet("{accommodationId}")]
-        public async Task<IActionResult> Read(Guid accommodationId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ReadByAccommodationId(Guid accommodationId, CancellationToken cancellationToken = default)
         {
             return Ok(await _mediator.Send(new ReadByAccommodationIdQuery() { AccommodationId = accommodationId }, cancellationToken));
         }
 
+        [Authorize(Roles = "Host")]
         [HttpPut("{accommodationId}")]
         public async Task<IActionResult> Configure(Guid accommodationId, ChangeAccommodationConfigurationRequest request, CancellationToken cancellationToken = default)
         {

@@ -4,6 +4,7 @@ using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.booking_service.AccommodationConfiguration.UseCases.CreateAccommodationRequests;
 using ftrip.io.framework.Persistence.Contracts;
 using Moq;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,14 +16,16 @@ namespace ftrip.io.booking_service.unit_tests.AccommodationConfiguration.UseCase
     {
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>();
         private readonly Mock<IAccommodationRepository> _accommodationRepositoryMock = new Mock<IAccommodationRepository>();
+        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
-        private CreateAccommodationRequestHandler _handler;
+        private readonly CreateAccommodationRequestHandler _handler;
 
         public CreateAccommodationRequestHandlerTests()
         {
             _handler = new CreateAccommodationRequestHandler(
                 _unitOfWorkMock.Object,
-                _accommodationRepositoryMock.Object
+                _accommodationRepositoryMock.Object,
+                _loggerMock.Object
             );
         }
 

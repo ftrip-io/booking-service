@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Accommodations_NotExecutedByHost" xml:space="preserve">
+    <value>You cannot perform this action because you are not host of {0}.</value>
+  </data>
   <data name="Common_MissingEntity" xml:space="preserve">
     <value>Entity with given id: {0} does not exist in the system.</value>
   </data>
@@ -132,11 +135,20 @@
   <data name="Common_Validation_FieldMustContainAlphaNumChars" xml:space="preserve">
     <value>{0} can only contain alpha numerical characters.</value>
   </data>
+  <data name="Requests_CannotExecuteForThatGuest" xml:space="preserve">
+    <value>You cannot perform this action for guest {0}.</value>
+  </data>
+  <data name="Requests_CannotExecuteForThatRequest" xml:space="preserve">
+    <value>You cannot perform this action for request {0}.</value>
+  </data>
   <data name="Request_Validation_AlreadyBooked" xml:space="preserve">
     <value>Accommodation booked in that time period.</value>
   </data>
   <data name="Request_Validation_InvalidStatus" xml:space="preserve">
     <value>Request with given id: {0} cannot be {1}.</value>
+  </data>
+  <data name="Reservations_CannotExecuteForThatReservation" xml:space="preserve">
+    <value>You cannot perform this action for reservation {0}.</value>
   </data>
   <data name="Reservation_Validation_TooLate" xml:space="preserve">
     <value>Reservation with id: {0} cannot be cancelled.</value>

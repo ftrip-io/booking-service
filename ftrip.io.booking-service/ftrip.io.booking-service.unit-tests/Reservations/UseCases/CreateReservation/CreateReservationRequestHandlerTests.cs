@@ -6,6 +6,7 @@ using ftrip.io.booking_service.Reservations.Domain;
 using ftrip.io.booking_service.Reservations.UseCases.CreateReservation;
 using ftrip.io.framework.Persistence.Contracts;
 using Moq;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,12 +14,13 @@ using Xunit;
 
 namespace ftrip.io.booking_service.unit_tests.Reservations.UseCases.CreateReservation
 {
-    public  class CreateReservationRequestHandlerTests
+    public class CreateReservationRequestHandlerTests
     {
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>();
         private readonly Mock<IReservationRepository> _reservationRepositoryMock = new Mock<IReservationRepository>();
+        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
-        private CreateReservationRequestHandler _handler;
+        private readonly CreateReservationRequestHandler _handler;
 
         public CreateReservationRequestHandlerTests()
         {
@@ -31,7 +33,8 @@ namespace ftrip.io.booking_service.unit_tests.Reservations.UseCases.CreateReserv
             _handler = new CreateReservationRequestHandler(
                 _unitOfWorkMock.Object,
                 _reservationRepositoryMock.Object,
-                mapper
+                mapper,
+                _loggerMock.Object
             );
         }
 

@@ -1,6 +1,7 @@
 ﻿using ftrip.io.booking_service.Reservations.UseCases.CancelReservation;
 using ftrip.io.booking_service.Reservations.UseCases.ReadReservation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
@@ -19,16 +20,17 @@ namespace ftrip.io.booking_service.Reservations
             _mediator = mediator;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery] ReadReservationQuery query, CancellationToken cancelationToken = default)
         {
             return Ok(await _mediator.Send(query, cancelationToken));
         }
 
+        [Authorize(Roles = "Guest")]
         [HttpPut("{reservationId}")]
         public async Task<IActionResult> Cancel(Guid reservationId, CancellationToken cancellationToken = default)
         {
-
             return Ok(await _mediator.Send(new CancelReservationRequest() { ReservationId = reservationId }, cancellationToken));
         }
     }

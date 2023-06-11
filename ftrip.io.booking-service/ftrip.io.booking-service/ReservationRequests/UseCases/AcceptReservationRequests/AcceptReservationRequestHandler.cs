@@ -1,4 +1,5 @@
-﻿using ftrip.io.booking_service.contracts.ReservationRequests.Events;
+﻿using ftrip.io.booking_service.AccommodationConfiguration;
+using ftrip.io.booking_service.contracts.ReservationRequests.Events;
 using ftrip.io.booking_service.ReservationRequests.Domain;
 using ftrip.io.booking_service.Reservations.UseCases.CreateReservation;
 using ftrip.io.framework.ExceptionHandling.Exceptions;
@@ -6,6 +7,7 @@ using ftrip.io.framework.Globalization;
 using ftrip.io.framework.messaging.Publisher;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +21,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
         private readonly IMediator _mediator;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IStringManager _stringManager;
+        private readonly ILogger _logger;
 
         public AcceptReservationRequestHandler(
             IUnitOfWork unitOfWork,
@@ -26,7 +29,8 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
             IReservationRequestQueryHelper reservationRequestQueryHelper,
             IMediator mediator,
             IMessagePublisher messagePublisher,
-            IStringManager stringManager)
+            IStringManager stringManager,
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _reservationRequestRepository = reservationRequestRepository;
@@ -34,6 +38,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
             _mediator = mediator;
             _messagePublisher = messagePublisher;
             _stringManager = stringManager;
+            _logger = logger;
         }
 
         public async Task<ReservationRequest> Handle(AcceptReservationRequest request, CancellationToken cancellationToken)
@@ -58,6 +63,10 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
         {
             if (!reservationRequest.CanBeModified)
             {
+                _logger.Error(
+                    "Reservation Request cannot be accepted because state is different from Waiting - RequestId[{RequestId}], Status[{Status}]",
+                    reservationRequest.Id, reservationRequest.Status
+                );
                 throw new BadLogicException(_stringManager.Format("Request_Validation_InvalidStatus", reservationRequest.Id, "accepted"));
             }
         }
@@ -66,7 +75,11 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
         {
             request.Status = ReservationRequestStatus.Accepted;
 
-            return await _reservationRequestRepository.Update(request, cancellationToken);
+            var acceptedRequest = await _reservationRequestRepository.Update(request, cancellationToken);
+
+            _logger.Information("Reservation Request accepted - RequestId[{RequestId}]", acceptedRequest.Id);
+
+            return acceptedRequest;
         }
 
         private async Task CreateReservation(ReservationRequest existingReservationRequest, CancellationToken cancellationToken)

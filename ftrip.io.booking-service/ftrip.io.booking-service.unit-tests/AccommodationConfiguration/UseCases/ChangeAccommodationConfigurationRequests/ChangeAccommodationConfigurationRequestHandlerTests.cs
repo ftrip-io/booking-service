@@ -3,9 +3,9 @@ using ftrip.io.booking_service.AccommodationConfiguration;
 using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.booking_service.AccommodationConfiguration.UseCases.ChangeAccommodationConfigurationRequests;
 using ftrip.io.framework.ExceptionHandling.Exceptions;
-using ftrip.io.framework.Globalization;
 using ftrip.io.framework.Persistence.Contracts;
 using Moq;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,16 +17,18 @@ namespace ftrip.io.booking_service.unit_tests.AccommodationConfiguration.UseCase
     {
         private readonly Mock<IUnitOfWork> _unitOfWorkMock = new Mock<IUnitOfWork>();
         private readonly Mock<IAccommodationRepository> _accommodationRepositoryMock = new Mock<IAccommodationRepository>();
-        private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
+        private readonly Mock<IAccommodationQueryHelper> _accommodationQueryHelperMock = new Mock<IAccommodationQueryHelper>();
+        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
-        private ChangeAccommodationConfigurationRequestHandler _handler;
+        private readonly ChangeAccommodationConfigurationRequestHandler _handler;
 
         public ChangeAccommodationConfigurationRequestHandlerTests()
         {
             _handler = new ChangeAccommodationConfigurationRequestHandler(
                 _unitOfWorkMock.Object,
                 _accommodationRepositoryMock.Object,
-                _stringManagerMock.Object
+                _accommodationQueryHelperMock.Object,
+                _loggerMock.Object
             );
         }
 
@@ -36,8 +38,8 @@ namespace ftrip.io.booking_service.unit_tests.AccommodationConfiguration.UseCase
             // Arrange
             var request = GetChangeAccommodationConfigurationRequest();
 
-            _accommodationRepositoryMock
-                .Setup(r => r.ReadByAccommodationId(It.Is<Guid>(id => id == request.AccommodationId), It.IsAny<CancellationToken>()))
+            _accommodationQueryHelperMock
+                .Setup(r => r.ReadOrThrow(It.Is<Guid>(id => id == request.AccommodationId), It.IsAny<CancellationToken>()))
                 .Throws(new MissingEntityException());
 
             // Act
@@ -54,8 +56,8 @@ namespace ftrip.io.booking_service.unit_tests.AccommodationConfiguration.UseCase
             // Arrange
             var request = GetChangeAccommodationConfigurationRequest();
 
-            _accommodationRepositoryMock
-                .Setup(r => r.ReadByAccommodationId(It.Is<Guid>(id => id == request.AccommodationId), It.IsAny<CancellationToken>()))
+            _accommodationQueryHelperMock
+                .Setup(r => r.ReadOrThrow(It.Is<Guid>(id => id == request.AccommodationId), It.IsAny<CancellationToken>()))
                 .Returns((Guid id, CancellationToken _) => Task.FromResult(
                     new Accommodation()
                     {

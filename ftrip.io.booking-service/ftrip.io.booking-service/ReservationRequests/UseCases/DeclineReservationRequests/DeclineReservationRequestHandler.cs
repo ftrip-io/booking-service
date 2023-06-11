@@ -5,6 +5,7 @@ using ftrip.io.framework.Globalization;
 using ftrip.io.framework.messaging.Publisher;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,19 +18,22 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.DeclineReservati
         private readonly IReservationRequestQueryHelper _reservationRequestQueryHelper;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IStringManager _stringManager;
+        private readonly ILogger _logger;
 
         public DeclineReservationRequestHandler(
             IUnitOfWork unitOfWork,
             IReservationRequestRepository reservationRequestRepository,
             IReservationRequestQueryHelper reservationRequestQueryHelper,
             IMessagePublisher messagePublisher,
-            IStringManager stringManager)
+            IStringManager stringManager,
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _reservationRequestQueryHelper = reservationRequestQueryHelper;
             _reservationRequestRepository = reservationRequestRepository;
             _messagePublisher = messagePublisher;
             _stringManager = stringManager;
+            _logger = logger;
         }
 
         public async Task<ReservationRequest> Handle(DeclineReservationRequest request, CancellationToken cancellationToken)
@@ -52,6 +56,10 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.DeclineReservati
         {
             if (!reservationRequest.CanBeModified)
             {
+                _logger.Error(
+                    "Reservation Request cannot be declined because state is different from Waiting - RequestId[{RequestId}], Status[{Status}]",
+                    reservationRequest.Id, reservationRequest.Status
+                );
                 throw new BadLogicException(_stringManager.Format("Request_Validation_InvalidStatus", reservationRequest.Id, "declined"));
             }
         }
@@ -60,7 +68,11 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.DeclineReservati
         {
             request.Status = ReservationRequestStatus.Declined;
 
-            return await _reservationRequestRepository.Update(request, cancellationToken);
+            var declinedRequest = await _reservationRequestRepository.Update(request, cancellationToken);
+
+            _logger.Information("Reservation Request declined - RequestId[{RequestId}]", declinedRequest.Id);
+
+            return declinedRequest;
         }
 
         private async Task PublishReservationRequestDeclinedEvent(ReservationRequest request, CancellationToken cancellationToken)

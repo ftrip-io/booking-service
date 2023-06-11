@@ -6,6 +6,7 @@ using ftrip.io.framework.Globalization;
 using ftrip.io.framework.messaging.Publisher;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,19 +20,22 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
         private readonly IAccommodationQueryHelper _accommodationQueryHelper;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IStringManager _stringManager;
+        private readonly ILogger _logger;
 
         public CancelReservationRequestHandler(
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             IReservationRepository reservationRepository,
             IAccommodationQueryHelper accommodationQueryHelper,
             IMessagePublisher messagePublisher,
-            IStringManager stringManager)
+            IStringManager stringManager,
+            ILogger logger)
         {
             _unitOfWork = unitOfWork;
             _reservationRepository = reservationRepository;
             _accommodationQueryHelper = accommodationQueryHelper;
             _messagePublisher = messagePublisher;
             _stringManager = stringManager;
+            _logger = logger;
         }
 
         public async Task<Reservation> Handle(CancelReservationRequest request, CancellationToken cancellationToken)
@@ -55,6 +59,7 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
             var existingReservation = await _reservationRepository.Read(reservationId, cancellationToken);
             if (existingReservation == null)
             {
+                _logger.Error("Reservation not found - ReservationId[{ReservationId}]", reservationId);
                 throw new MissingEntityException(_stringManager.Format("Common_MissingEntity", reservationId));
             }
 
@@ -64,8 +69,12 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
         public void Validate(Reservation reservation)
         {
             var lessThenDayBeforeReservation = (reservation.DatePeriod.DateFrom - DateTime.UtcNow).Days < 1;
-            if (lessThenDayBeforeReservation) 
+            if (lessThenDayBeforeReservation)
             {
+                _logger.Error(
+                    "Reservation cannot be cancelled because there is less then a day - ReservationId[{ReservationId}], Date[{Date}]",
+                    reservation.Id, reservation.DatePeriod.DateFrom
+                );
                 throw new BadLogicException(_stringManager.Format("Reservation_Validation_TooLate", reservation.Id));
             }
         }
@@ -74,7 +83,11 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
         {
             reservation.IsCancelled = true;
 
-            return await _reservationRepository.Update(reservation, cancellationToken);
+            var cancelledReservation = await _reservationRepository.Update(reservation, cancellationToken);
+
+            _logger.Information("Reservation cancelled - ReservationId[{ReservationId}]", reservation.Id);
+
+            return cancelledReservation;
         }
 
         private async Task PublishReservationCanceledEvent(Reservation reservation, CancellationToken cancellationToken)
@@ -87,6 +100,8 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
                 AccomodationId = reservation.AccomodationId,
                 GuestId = reservation.GuestId,
                 HostId = accomodation.HostId,
+                From = reservation.DatePeriod.DateFrom,
+                To = reservation.DatePeriod.DateTo
             };
 
             await _messagePublisher.Send<ReservationCanceledEvent, string>(reservationCanceled, cancellationToken);

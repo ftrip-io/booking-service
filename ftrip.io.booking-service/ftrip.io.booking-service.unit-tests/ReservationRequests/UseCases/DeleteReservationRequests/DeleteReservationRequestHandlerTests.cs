@@ -7,6 +7,7 @@ using ftrip.io.framework.ExceptionHandling.Exceptions;
 using ftrip.io.framework.Globalization;
 using ftrip.io.framework.Persistence.Contracts;
 using Moq;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Delet
         private readonly Mock<IReservationRequestRepository> _reservationRequestRepositoryMock = new Mock<IReservationRequestRepository>();
         private readonly Mock<IReservationRequestQueryHelper> _reservationRequestQueryHelperMock = new Mock<IReservationRequestQueryHelper>();
         private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
+        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
         private readonly DeleteReservationRequestHandler _handler;
 
@@ -29,7 +31,8 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Delet
                 _unitOfWorkMock.Object,
                 _reservationRequestRepositoryMock.Object,
                 _reservationRequestQueryHelperMock.Object,
-                _stringManagerMock.Object
+                _stringManagerMock.Object,
+                _loggerMock.Object
             );
         }
 

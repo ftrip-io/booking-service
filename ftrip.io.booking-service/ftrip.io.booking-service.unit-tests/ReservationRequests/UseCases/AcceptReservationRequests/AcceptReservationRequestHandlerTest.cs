@@ -12,6 +12,7 @@ using ftrip.io.framework.messaging.Publisher;
 using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
 using Moq;
+using Serilog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Accep
         private readonly Mock<IMediator> _mediatorMock = new Mock<IMediator>();
         private readonly Mock<IMessagePublisher> _messagePublisherMock = new Mock<IMessagePublisher>();
         private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
+        private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
         private readonly AcceptReservationRequestHandler _handler;
 
@@ -38,7 +40,8 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Accep
                 _reservationRequestQueryHelperMock.Object,
                 _mediatorMock.Object,
                 _messagePublisherMock.Object,
-                _stringManagerMock.Object
+                _stringManagerMock.Object,
+                _loggerMock.Object
             );
         }
 

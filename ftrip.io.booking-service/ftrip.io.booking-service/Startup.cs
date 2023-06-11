@@ -73,7 +73,7 @@ namespace ftrip.io.booking_service
 
             app.UseSerilogRequestLogging();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
