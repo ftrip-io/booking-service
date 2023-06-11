@@ -38,7 +38,7 @@ namespace ftrip.io.booking_service.Reservations
             var isReservationGuest = reservation?.GuestId.ToString() == _currentUserContext.Id;
             if (!isReservationGuest)
             {
-                _logger.Error("Error while trying to execute action for other guest - GuestId[{GuestId}], ExecutingAsId[{ExecutingAsId}]", _currentUserContext.Id, reservation.GuestId);
+                _logger.Error("Error while trying to execute action for other guest - GuestId[{GuestId}], ExecutingAsId[{ExecutingAsId}]", _currentUserContext.Id, reservation?.GuestId);
                 throw new ForbiddenException(_stringManager.Format("Reservations_CannotExecuteForThatReservation", reservationId));
             }
         }
