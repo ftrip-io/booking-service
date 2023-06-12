@@ -50,7 +50,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
 
         public async Task<ReservationRequest> Handle(CreateReservationRequest request, CancellationToken cancellationToken)
         {
-            var accomodation = await _accommodationQueryHelper.ReadOrThrow(request.AccomodationId, cancellationToken);
+            var accommodation = await _accommodationQueryHelper.ReadOrThrow(request.AccomodationId, cancellationToken);
             await Validate(request, cancellationToken);
 
             await _unitOfWork.Begin(cancellationToken);
@@ -61,7 +61,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
 
             await _unitOfWork.Commit(cancellationToken);
 
-            await PublishReservationRequestCreatedEvent(accomodation.HostId, createdReservationRequest, cancellationToken);
+            await PublishReservationRequestCreatedEvent(accommodation.HostId, createdReservationRequest, cancellationToken);
 
             return createdReservationRequest;
         }

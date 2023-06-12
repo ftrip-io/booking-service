@@ -61,7 +61,8 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.UseCases.ReadOccupan
             {
                 AccommodationId = request.AccommodationId,
                 PeriodFrom = request.PeriodFrom,
-                PeriodTo = request.PeriodTo
+                PeriodTo = request.PeriodTo,
+                IncludeCancelled = false
             }, cancellationToken);
         }
 

@@ -1,4 +1,5 @@
 ﻿using ftrip.io.booking_service.contracts.ReservationRequests.Events;
+using ftrip.io.booking_service.ReservationRequests.Domain;
 using ftrip.io.booking_service.ReservationRequests.UseCases.DeclineReservationRequests;
 using ftrip.io.booking_service.ReservationRequests.UseCases.ReadReservationRequest;
 using MassTransit;
@@ -35,7 +36,8 @@ namespace ftrip.io.booking_service.ReservationRequests.Consumers
                 AccommodationId = requestAcceptedEvent.AccomodationId,
                 PeriodFrom = requestAcceptedEvent.From,
                 PeriodTo = requestAcceptedEvent.To,
-                GuestId = null
+                GuestId = null,
+                Status = ReservationRequestStatus.Waiting,
             };
 
             var requestsToDecline = await _reservationRequestRepository.ReadByQuery(query, CancellationToken.None);

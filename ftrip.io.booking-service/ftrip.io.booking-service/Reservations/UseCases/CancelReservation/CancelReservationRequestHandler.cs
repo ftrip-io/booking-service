@@ -68,8 +68,8 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
 
         public void Validate(Reservation reservation)
         {
-            var lessThenDayBeforeReservation = (reservation.DatePeriod.DateFrom - DateTime.UtcNow).Days < 1;
-            if (lessThenDayBeforeReservation)
+            var lessThanDayBeforeReservation = (reservation.DatePeriod.DateFrom - DateTime.UtcNow).Days < 1;
+            if (lessThanDayBeforeReservation)
             {
                 _logger.Error(
                     "Reservation cannot be cancelled because there is less then a day - ReservationId[{ReservationId}], Date[{Date}]",
@@ -92,14 +92,14 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CancelReservation
 
         private async Task PublishReservationCanceledEvent(Reservation reservation, CancellationToken cancellationToken)
         {
-            var accomodation = await _accommodationQueryHelper.ReadOrThrow(reservation.AccomodationId, cancellationToken);
+            var accommodation = await _accommodationQueryHelper.ReadOrThrow(reservation.AccomodationId, cancellationToken);
 
             var reservationCanceled = new ReservationCanceledEvent()
             {
                 ReservationId = reservation.Id,
                 AccomodationId = reservation.AccomodationId,
                 GuestId = reservation.GuestId,
-                HostId = accomodation.HostId,
+                HostId = accommodation.HostId,
                 From = reservation.DatePeriod.DateFrom,
                 To = reservation.DatePeriod.DateTo
             };

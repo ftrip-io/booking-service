@@ -29,7 +29,7 @@ namespace ftrip.io.booking_service.AccommodationConfiguration
 
         [Authorize(Roles = "Host")]
         [HttpGet("{accommodationId}")]
-        public async Task<IActionResult> ReadByAccommodationId(Guid accommodationId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ReadByAccommodation(Guid accommodationId, CancellationToken cancellationToken = default)
         {
             return Ok(await _mediator.Send(new ReadByAccommodationIdQuery() { AccommodationId = accommodationId }, cancellationToken));
         }

@@ -34,7 +34,7 @@ namespace ftrip.io.booking_service.AccommodationConfiguration
             var accommodation = await _accommodationRepository.ReadByAccommodationId(accommodationId, cancellationToken);
             if (accommodation == null)
             {
-                _logger.Error("Accomodation Configuration not found - AccommodationId[{AccommodationId}]", accommodationId);
+                _logger.Error("Accommodation Configuration not found - AccommodationId[{AccommodationId}]", accommodationId);
                 throw new MissingEntityException(_stringManager.Format("Common_MissingEntity", accommodationId));
             }
 

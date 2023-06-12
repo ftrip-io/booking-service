@@ -50,7 +50,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.DeleteReservatio
             if (!reservationRequest.CanBeModified)
             {
                 _logger.Error(
-                    "Reservation Request cannot be accepted because state is different from Waiting - RequestId[{RequestId}], Status[{Status}]",
+                    "Reservation Request cannot be deleted because state is different from Waiting - RequestId[{RequestId}], Status[{Status}]",
                     reservationRequest.Id, reservationRequest.Status
                 );
                 throw new BadLogicException(_stringManager.Format("Request_Validation_InvalidStatus", reservationRequest.Id, "deleted"));
