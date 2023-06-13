@@ -43,22 +43,23 @@ namespace ftrip.io.booking_service.Reviews
 
             await _context.Database.OpenConnectionAsync();
             using var result = await command.ExecuteReaderAsync();
-            while (await result.ReadAsync())
+            if (!result.HasRows)
             {
-                return new AccomodationReviewsSummary()
-                {
-                    AccomodationId = accomodationId,
-                    Grades = new AccomodationGradesSummary()
-                    {
-                        Accomodation = result.GetDecimal(0),
-                        Location = result.GetDecimal(1),
-                        ValueForMoney = result.GetDecimal(2)
-                    },
-                    ReviewsCount = result.GetInt32(3)
-                };
+                return null;
             }
 
-            return null;
+            await result.ReadAsync();
+            return new AccomodationReviewsSummary()
+            {
+                AccomodationId = accomodationId,
+                Grades = new AccomodationGradesSummary()
+                {
+                    Accomodation = result.GetDecimal(0),
+                    Location = result.GetDecimal(1),
+                    ValueForMoney = result.GetDecimal(2)
+                },
+                ReviewsCount = result.GetInt32(3)
+            };
         }
     }
 }
