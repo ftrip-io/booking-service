@@ -1,4 +1,6 @@
 ﻿using ftrip.io.booking_service.Reservations.UseCases.CancelReservation;
+using ftrip.io.booking_service.Reservations.UseCases.CountActiveReservations;
+using ftrip.io.booking_service.Reservations.UseCases.CountActiveReservationsForHost;
 using ftrip.io.booking_service.Reservations.UseCases.ReadReservation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +27,20 @@ namespace ftrip.io.booking_service.Reservations
         public async Task<IActionResult> Search([FromQuery] ReadReservationQuery query, CancellationToken cancelationToken = default)
         {
             return Ok(await _mediator.Send(query, cancelationToken));
+        }
+
+        [Authorize(Roles = "Guest")]
+        [HttpGet("active/guests/{guestId}/count")]
+        public async Task<IActionResult> CountActiveForGuest(Guid guestId, CancellationToken cancellationToken = default)
+        {
+            return Ok(await _mediator.Send(new CountActiveReservationsForGuestQuery() { GuestId = guestId }, cancellationToken));
+        }
+
+        [Authorize(Roles = "Host")]
+        [HttpGet("active/hosts/{hostId}/count")]
+        public async Task<IActionResult> CountActiveForHost(Guid hostId, CancellationToken cancellationToken = default)
+        {
+            return Ok(await _mediator.Send(new CountActiveReservationsForHostQuery() { HostId = hostId }, cancellationToken));
         }
 
         [Authorize(Roles = "Guest")]

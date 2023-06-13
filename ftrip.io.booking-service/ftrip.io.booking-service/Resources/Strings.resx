@@ -147,10 +147,31 @@
   <data name="Request_Validation_InvalidStatus" xml:space="preserve">
     <value>Request with given id: {0} cannot be {1}.</value>
   </data>
+  <data name="Reservations_CannotExecuteForThatGuest" xml:space="preserve">
+    <value>You cannot perform this action for guest {0}.</value>
+  </data>
   <data name="Reservations_CannotExecuteForThatReservation" xml:space="preserve">
     <value>You cannot perform this action for reservation {0}.</value>
   </data>
   <data name="Reservation_Validation_TooLate" xml:space="preserve">
     <value>Reservation with id: {0} cannot be cancelled.</value>
+  </data>
+  <data name="Reviews_CannotExecuteForThatGuest" xml:space="preserve">
+    <value>You cannot perform this action for guest {0}.</value>
+  </data>
+  <data name="Reviews_CannotExecuteForThatReview" xml:space="preserve">
+    <value>You cannot perform this action for review {0}.</value>
+  </data>
+  <data name="Reviews_ForAccomodationAlreadyPlaced" xml:space="preserve">
+    <value>Guest {0} has already placed review for accomodation {1}.</value>
+  </data>
+  <data name="Reviews_ForHostAlreadyPlaced" xml:space="preserve">
+    <value>Guest {0} has already placed review for host {1}.</value>
+  </data>
+  <data name="Reviews_GuestNeverReservedAccomodation" xml:space="preserve">
+    <value>Guest {0} has never reserved accomodation {1}.</value>
+  </data>
+  <data name="Reviews_GuestNeverReservedAnyAccomodationOfHost" xml:space="preserve">
+    <value>Guest {0} has never reserved any accomodation of host {1}.</value>
   </data>
 </root>
