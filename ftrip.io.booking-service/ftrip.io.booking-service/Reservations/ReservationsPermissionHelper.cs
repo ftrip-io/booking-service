@@ -10,6 +10,8 @@ namespace ftrip.io.booking_service.Reservations
 {
     public interface IReservationsPermissionHelper
     {
+        void CanBeReadByCurrentGuest(Guid guestId);
+
         Task IsReservedByCurrentGuest(Guid reservationId, CancellationToken cancellationToken);
     }
 
@@ -30,6 +32,16 @@ namespace ftrip.io.booking_service.Reservations
             _currentUserContext = currentUserContext;
             _stringManager = stringManager;
             _logger = logger;
+        }
+
+        public void CanBeReadByCurrentGuest(Guid guestId)
+        {
+            var doingForHimself = guestId.ToString() == _currentUserContext.Id;
+            if (!doingForHimself)
+            {
+                _logger.Error("Error while trying to execute action for other guest - GuestId[{GuestId}], ExecutingAsId[{ExecutingAsId}]", _currentUserContext.Id, guestId);
+                throw new ForbiddenException(_stringManager.Format("Reservations_CannotExecuteForThatGuest", guestId));
+            }
         }
 
         public async Task IsReservedByCurrentGuest(Guid reservationId, CancellationToken cancellationToken)

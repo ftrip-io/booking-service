@@ -17,6 +17,16 @@ namespace ftrip.io.booking_service.Reservations
         Task<bool> HasAnyByAccomodationAndDatePeriod(Guid accomodationId, DatePeriod period, CancellationToken cancellationToken);
 
         Task<IEnumerable<Reservation>> ReadByQuery(ReadReservationQuery query, CancellationToken cancellationToken);
+
+        Task<IEnumerable<Reservation>> ReadForGuestInPast(Guid guestId, CancellationToken cancellationToken);
+
+        Task<int> CountActiveForGuest(Guid guestId, CancellationToken cancellationToken);
+
+        Task<int> CountActiveByAccommodations(IEnumerable<Guid> accomodationIds, CancellationToken cancellationToken);
+
+        Task<bool> HasGuestReservedAccomodationInPast(Guid guestId, Guid accomodationId, CancellationToken cancellationToken);
+
+        Task<bool> HasGuestReservedAnyOfAccomodationsInPast(Guid guestId, IEnumerable<Guid> accomodationIds, CancellationToken cancellationToken);
     }
 
     public class ReservationRepository : Repository<Reservation, Guid>, IReservationRepository
@@ -42,6 +52,53 @@ namespace ftrip.io.booking_service.Reservations
                 .Where(r => !query.PeriodFrom.HasValue || r.DatePeriod.DateFrom >= query.PeriodFrom)
                 .Where(r => !query.PeriodTo.HasValue || r.DatePeriod.DateTo <= query.PeriodTo)
                 .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<Reservation>> ReadForGuestInPast(Guid guestId, CancellationToken cancellationToken)
+        {
+            return await _entities.Where(r =>
+                !r.IsCancelled &&
+                r.GuestId == guestId &&
+                r.DatePeriod.DateFrom < DateTime.Now)
+            .ToListAsync(cancellationToken);
+        }
+
+        public async Task<int> CountActiveForGuest(Guid guestId, CancellationToken cancellationToken)
+        {
+            return await _entities.CountAsync(r =>
+                !r.IsCancelled &&
+                r.GuestId == guestId &&
+                r.DatePeriod.DateFrom >= DateTime.Now
+            , cancellationToken);
+        }
+
+        public async Task<int> CountActiveByAccommodations(IEnumerable<Guid> accomodationIds, CancellationToken cancellationToken)
+        {
+            return await _entities.CountAsync(r =>
+               !r.IsCancelled &&
+               accomodationIds.Contains(r.AccomodationId) &&
+               r.DatePeriod.DateFrom >= DateTime.Now
+           , cancellationToken);
+        }
+
+        public async Task<bool> HasGuestReservedAccomodationInPast(Guid guestId, Guid accomodationId, CancellationToken cancellationToken)
+        {
+            return await _entities.AnyAsync(r =>
+                !r.IsCancelled &&
+                r.GuestId == guestId &&
+                r.AccomodationId == accomodationId &&
+                r.DatePeriod.DateFrom < DateTime.Now
+            , cancellationToken);
+        }
+
+        public async Task<bool> HasGuestReservedAnyOfAccomodationsInPast(Guid guestId, IEnumerable<Guid> accomodationIds, CancellationToken cancellationToken)
+        {
+            return await _entities.AnyAsync(r =>
+                !r.IsCancelled &&
+                r.GuestId == guestId &&
+                accomodationIds.Contains(r.AccomodationId) &&
+                r.DatePeriod.DateFrom < DateTime.Now
+            , cancellationToken);
         }
     }
 }
