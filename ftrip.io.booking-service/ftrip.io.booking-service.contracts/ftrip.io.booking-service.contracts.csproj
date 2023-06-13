@@ -4,6 +4,17 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>ftrip.io.booking_service.contracts</RootNamespace>
 	<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+	<Authors>ftrip.io</Authors>
+	<Company>ftrip.io</Company>
+	<Description>This library contains all necessary booking-service contracts such as events, commands, and requests/responses that can be used for handling/communicating in other services.</Description>
+	<Copyright>Ftrip.io 2023</Copyright>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/ftrip-io/ftrip.io</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/ftrip-io/ftrip.io</RepositoryUrl>
+	<PackageTags>ftrip.io, booking-service, contracts</PackageTags>
+	<PackageReleaseNotes>Initial version with Reservation Request, Reservation and Review events.</PackageReleaseNotes>
+	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
