@@ -13,7 +13,7 @@ namespace ftrip.io.booking_service.Reviews.UseCases.UpdateAccomodationReview
                 AccomodationGrade = 4,
                 LocationGrade = 3,
                 ValueForMoneyGrade = 4,
-                RecensionText = "Edit: Went there again. It definitely better, but still not great."
+                RecensionText = "Edit: Went there again. It definitely was better, but still not great."
             };
         }
     }

@@ -24,9 +24,9 @@ namespace ftrip.io.booking_service.Reservations
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Search([FromQuery] ReadReservationQuery query, CancellationToken cancelationToken = default)
+        public async Task<IActionResult> Search([FromQuery] ReadReservationQuery query, CancellationToken cancellationToken = default)
         {
-            return Ok(await _mediator.Send(query, cancelationToken));
+            return Ok(await _mediator.Send(query, cancellationToken));
         }
 
         [Authorize(Roles = "Guest")]

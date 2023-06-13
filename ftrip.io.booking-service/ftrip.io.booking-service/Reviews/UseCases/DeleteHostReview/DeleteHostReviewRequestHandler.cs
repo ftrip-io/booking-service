@@ -51,7 +51,7 @@ namespace ftrip.io.booking_service.Reviews.UseCases.DeleteHostReview
         {
             var deletedReview = await _hostReviewRepository.Delete(reviewId, cancellationToken);
 
-            _logger.Information("Host Review delete - ReviewId[{ReviewId}]", reviewId);
+            _logger.Information("Host Review deleted - ReviewId[{ReviewId}]", reviewId);
 
             return deletedReview;
         }
