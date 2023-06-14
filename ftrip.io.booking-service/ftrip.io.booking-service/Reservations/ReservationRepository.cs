@@ -1,4 +1,5 @@
-﻿using ftrip.io.booking_service.Common.Domain;
+﻿using ftrip.io.booking_service.AccommodationOccupancies.UseCases.CheckAvailability;
+using ftrip.io.booking_service.Common.Domain;
 using ftrip.io.booking_service.Reservations.Domain;
 using ftrip.io.booking_service.Reservations.UseCases.ReadReservation;
 using ftrip.io.framework.Persistence.Contracts;
@@ -27,6 +28,7 @@ namespace ftrip.io.booking_service.Reservations
         Task<bool> HasGuestReservedAccomodationInPast(Guid guestId, Guid accomodationId, CancellationToken cancellationToken);
 
         Task<bool> HasGuestReservedAnyOfAccomodationsInPast(Guid guestId, IEnumerable<Guid> accomodationIds, CancellationToken cancellationToken);
+        Task<IEnumerable<Guid>> ReadByAccommodationsAndDatePeriod(CheckAvailabilityQuery query, CancellationToken cancellationToken);
     }
 
     public class ReservationRepository : Repository<Reservation, Guid>, IReservationRepository
@@ -99,6 +101,17 @@ namespace ftrip.io.booking_service.Reservations
                 accomodationIds.Contains(r.AccomodationId) &&
                 r.DatePeriod.DateFrom < DateTime.Now
             , cancellationToken);
+        }
+
+        public async Task<IEnumerable<Guid>> ReadByAccommodationsAndDatePeriod(CheckAvailabilityQuery query, CancellationToken cancellationToken) {
+            return await _entities
+                .Where(r => !r.IsCancelled)
+                .Where(r => query.AccommodationIds.Contains(r.AccomodationId))
+                 .Where(r => ((r.DatePeriod.DateFrom <= query.PeriodTo && r.DatePeriod.DateTo >= query.PeriodFrom) ||
+                              (r.DatePeriod.DateFrom >= query.PeriodFrom && r.DatePeriod.DateFrom <= query.PeriodTo)))
+                .Select(r => r.AccomodationId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
         }
     }
 }

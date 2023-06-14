@@ -85,6 +85,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.DeclineReservati
                 From = request.DatePeriod.DateFrom,
                 To = request.DatePeriod.DateTo,
             };
+            System.Console.WriteLine("AAAAAAAAAA2");
 
             await _messagePublisher.Send<ReservationRequestDeclinedEvent, string>(requestDeclined, cancellationToken);
         }
