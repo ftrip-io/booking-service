@@ -42,6 +42,8 @@ namespace ftrip.io.booking_service.Installers
             _services.AddProxiedScoped<IHostReviewsSummaryRepository, HostReviewsSummaryRepository>();
             _services.AddProxiedScoped<IHostReviewsSummaryCalculator, HostReviewsSummaryCalculator>();
             _services.AddProxiedScoped<IHostReviewPermissionsHelper, HostReviewPermissionsHelper>();
+           
+            _services.AddScoped<ICatalogServiceClient, CatalogServiceClient>();
         }
     }
 }

@@ -85,6 +85,9 @@ namespace ftrip.io.booking_service.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(65,30)");
+
                     b.HasKey("Id");
 
                     b.ToTable("ReservationRequests");
@@ -122,6 +125,9 @@ namespace ftrip.io.booking_service.Migrations
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");
 

@@ -93,7 +93,8 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
                     DateTo = existingReservationRequest.DatePeriod.DateTo
                 },
                 AccomodationId = existingReservationRequest.AccomodationId,
-                GuestNumber = existingReservationRequest.GuestNumber
+                GuestNumber = existingReservationRequest.GuestNumber,
+                TotalPrice = existingReservationRequest.TotalPrice
             };
 
             await _mediator.Send(reservationRequest, cancellationToken);
@@ -108,6 +109,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.AcceptReservatio
                 GuestId = request.GuestId,
                 From = request.DatePeriod.DateFrom,
                 To = request.DatePeriod.DateTo,
+                TotalPrice = request.TotalPrice
             };
 
             await _messagePublisher.Send<ReservationRequestAcceptedEvent, string>(requestAccepted, cancellationToken);

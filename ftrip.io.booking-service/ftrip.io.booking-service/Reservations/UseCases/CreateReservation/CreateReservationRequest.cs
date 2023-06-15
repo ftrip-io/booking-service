@@ -13,6 +13,7 @@ namespace ftrip.io.booking_service.Reservations.UseCases.CreateReservation
         public Guid AccomodationId { get; set; }
         public CreateDatePeriodRequest DatePeriod { get; set; }
         public int GuestNumber { get; set; }
+        public decimal TotalPrice { get; set; }
     }
 
     [Mappable(Destination = typeof(DatePeriod))]

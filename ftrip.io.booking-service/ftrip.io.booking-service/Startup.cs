@@ -38,6 +38,9 @@ namespace ftrip.io.booking_service
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHttpClient("catalog", client =>
+                client.BaseAddress = new Uri(Environment.GetEnvironmentVariable("CATALOG_SERVICE_URL"))
+            );
 
             InstallerCollection.With(
                 new SwaggerInstaller<Startup>(services),

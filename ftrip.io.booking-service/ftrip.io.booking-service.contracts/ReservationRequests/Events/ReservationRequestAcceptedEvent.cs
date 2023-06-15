@@ -10,6 +10,7 @@ namespace ftrip.io.booking_service.contracts.ReservationRequests.Events
         public Guid GuestId { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
+        public decimal TotalPrice { get; set; }
 
         public ReservationRequestAcceptedEvent()
         {
