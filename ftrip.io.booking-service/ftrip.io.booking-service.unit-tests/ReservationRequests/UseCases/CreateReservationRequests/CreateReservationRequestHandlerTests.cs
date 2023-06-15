@@ -97,12 +97,10 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
         {
             // Arrange
             var request = GetCreateReservationRequest();
+
             _catalogServiceClientMock
-                .Setup(c => c.GetPriceInfo(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(new PriceInfo() 
-                {
-                    Problems = new System.Collections.Generic.List<string>()
-                }));
+                .Setup(c => c.GetPriceInfo(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new PriceInfo()));
 
             _reservationRepositoryMock
                 .Setup(r => r.HasAnyByAccomodationAndDatePeriod(It.IsAny<Guid>(), It.IsAny<DatePeriod>(), It.IsAny<CancellationToken>()))
