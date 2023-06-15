@@ -12,7 +12,6 @@ using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
 using Serilog;
 using System;
-using System.Collections;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,7 +57,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
             var accommodation = await _accommodationQueryHelper.ReadOrThrow(request.AccomodationId, cancellationToken);
             await Validate(request, cancellationToken);
 
-            var priceInfo = await GetPriceInfoOrThrow(request);
+            var priceInfo = await GetPriceInfoOrThrow(request, cancellationToken);
 
             await _unitOfWork.Begin(cancellationToken);
 
@@ -97,15 +96,15 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
 
             return createdRequest;
         }
-        private async Task<PriceInfo> GetPriceInfoOrThrow(CreateReservationRequest request) 
+        private async Task<PriceInfo> GetPriceInfoOrThrow(CreateReservationRequest request, CancellationToken cancellationToken) 
         {
-            var priceInfo = await _catalogServiceClient.GetPriceInfo(request.AccomodationId, request.DatePeriod.DateFrom, request.DatePeriod.DateTo, request.GuestNumber);
+            var priceInfo = await _catalogServiceClient.GetPriceInfo(request.AccomodationId, request.DatePeriod.DateFrom, request.DatePeriod.DateTo, request.GuestNumber, cancellationToken);
 
             if (priceInfo.Problems.Any())
             {
                 var message = string.Join("\n", priceInfo.Problems);
               
-                _logger.Error("Accommodation cannot be booked: {message}", message);
+                _logger.Error("Accommodation cannot be booked: {Message}", message);
                 throw new BadLogicException(message);
             }
 

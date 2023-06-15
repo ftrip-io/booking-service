@@ -28,6 +28,7 @@ namespace ftrip.io.booking_service.Reservations
         Task<bool> HasGuestReservedAccomodationInPast(Guid guestId, Guid accomodationId, CancellationToken cancellationToken);
 
         Task<bool> HasGuestReservedAnyOfAccomodationsInPast(Guid guestId, IEnumerable<Guid> accomodationIds, CancellationToken cancellationToken);
+
         Task<IEnumerable<Guid>> ReadByAccommodationsAndDatePeriod(CheckAvailabilityQuery query, CancellationToken cancellationToken);
     }
 

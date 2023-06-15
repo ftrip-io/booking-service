@@ -1,7 +1,6 @@
 ﻿using ftrip.io.booking_service.Reservations;
 using MediatR;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,6 +11,7 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.UseCases.CheckAvaila
     public class CheckAvailabilityQueryHandler : IRequestHandler<CheckAvailabilityQuery, IEnumerable<Guid>>
     {
         private readonly IReservationRepository _reservationRepository;
+
         public CheckAvailabilityQueryHandler(IReservationRepository reservationRepository)
         {
             _reservationRepository = reservationRepository;
@@ -22,7 +22,6 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.UseCases.CheckAvaila
             var notAvailableAccommodationId = await _reservationRepository.ReadByAccommodationsAndDatePeriod(request, cancellationToken);
 
             return request.AccommodationIds.Except(notAvailableAccommodationId).ToList();
-
         }
     }
 }

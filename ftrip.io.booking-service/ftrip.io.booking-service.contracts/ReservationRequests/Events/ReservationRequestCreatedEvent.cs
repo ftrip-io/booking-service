@@ -12,6 +12,7 @@ namespace ftrip.io.booking_service.contracts.ReservationRequests.Events
         public DateTime From { get; set; }
         public DateTime To { get; set; }
         public decimal TotalPrice { get; set; }
+
         public ReservationRequestCreatedEvent()
         {
             Id = Guid.NewGuid().ToString();

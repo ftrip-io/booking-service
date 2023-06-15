@@ -9,6 +9,5 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.UseCases.CheckAvaila
         public Guid[] AccommodationIds { get; set; }
         public DateTime? PeriodFrom { get; set; }
         public DateTime? PeriodTo { get; set; }
-
     }
 }
