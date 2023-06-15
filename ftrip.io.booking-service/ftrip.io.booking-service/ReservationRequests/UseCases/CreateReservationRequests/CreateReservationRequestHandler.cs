@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ftrip.io.booking_service.AccommodationConfiguration;
-using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.booking_service.Common.Domain;
+using ftrip.io.booking_service.contracts.ReservationRequests;
 using ftrip.io.booking_service.contracts.ReservationRequests.Events;
 using ftrip.io.booking_service.ReservationRequests.Domain;
 using ftrip.io.booking_service.Reservations;
@@ -12,6 +12,7 @@ using ftrip.io.framework.Persistence.Contracts;
 using MediatR;
 using Serilog;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
         private readonly IMapper _mapper;
         private readonly IMessagePublisher _messagePublisher;
         private readonly IStringManager _stringManager;
+        private readonly ICatalogServiceClient _catalogServiceClient;
         private readonly ILogger _logger;
 
         public CreateReservationRequestHandler(
@@ -36,6 +38,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
             IMapper mapper,
             IMessagePublisher messagePublisher,
             IStringManager stringManager,
+            ICatalogServiceClient catalogServiceClient,
             ILogger logger)
         {
             _unitOfWork = unitOfWork;
@@ -45,6 +48,7 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
             _mapper = mapper;
             _messagePublisher = messagePublisher;
             _stringManager = stringManager;
+            _catalogServiceClient = catalogServiceClient;
             _logger = logger;
         }
 
@@ -53,9 +57,12 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
             var accommodation = await _accommodationQueryHelper.ReadOrThrow(request.AccomodationId, cancellationToken);
             await Validate(request, cancellationToken);
 
+            var priceInfo = await GetPriceInfoOrThrow(request, cancellationToken);
+
             await _unitOfWork.Begin(cancellationToken);
 
             var reservationRequest = _mapper.Map<ReservationRequest>(request);
+            reservationRequest.TotalPrice = priceInfo.TotalPrice;
 
             var createdReservationRequest = await CreateRequest(reservationRequest, cancellationToken);
 
@@ -89,7 +96,20 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
 
             return createdRequest;
         }
+        private async Task<PriceInfo> GetPriceInfoOrThrow(CreateReservationRequest request, CancellationToken cancellationToken) 
+        {
+            var priceInfo = await _catalogServiceClient.GetPriceInfo(request.AccomodationId, request.DatePeriod.DateFrom, request.DatePeriod.DateTo, request.GuestNumber, cancellationToken);
 
+            if (priceInfo.Problems.Any())
+            {
+                var message = string.Join("\n", priceInfo.Problems);
+              
+                _logger.Error("Accommodation cannot be booked: {Message}", message);
+                throw new BadLogicException(message);
+            }
+
+            return priceInfo;
+        }
         private async Task PublishReservationRequestCreatedEvent(Guid hostId, ReservationRequest reservationRequest, CancellationToken cancellationToken)
         {
             var requestCreated = new ReservationRequestCreatedEvent()
@@ -99,7 +119,8 @@ namespace ftrip.io.booking_service.ReservationRequests.UseCases.CreateReservatio
                 HostId = hostId,
                 GuestId = reservationRequest.GuestId,
                 From = reservationRequest.DatePeriod.DateFrom,
-                To = reservationRequest.DatePeriod.DateTo
+                To = reservationRequest.DatePeriod.DateTo,
+                TotalPrice = reservationRequest.TotalPrice
             };
 
             await _messagePublisher.Send<ReservationRequestCreatedEvent, string>(requestCreated, cancellationToken);

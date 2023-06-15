@@ -42,6 +42,9 @@ namespace ftrip.io.booking_service.ReservationRequests
 
         public async Task CanBeProcessedByCurrentHost(Guid requestId, CancellationToken cancellationToken)
         {
+            if (_currentUserContext.Id == "Consumer")
+                return;
+
             var request = await _reservationRequestQueryHelper.ReadOrThrow(requestId, cancellationToken);
             var accommodation = await _accommodationQueryHelper.ReadOrThrow(request.AccomodationId, cancellationToken);
             var isProcessedByHost = accommodation.HostId.ToString() == _currentUserContext.Id;

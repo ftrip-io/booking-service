@@ -3,6 +3,7 @@ using FluentAssertions;
 using ftrip.io.booking_service.AccommodationConfiguration;
 using ftrip.io.booking_service.AccommodationConfiguration.Domain;
 using ftrip.io.booking_service.Common.Domain;
+using ftrip.io.booking_service.contracts.ReservationRequests;
 using ftrip.io.booking_service.contracts.ReservationRequests.Events;
 using ftrip.io.booking_service.ReservationRequests;
 using ftrip.io.booking_service.ReservationRequests.Domain;
@@ -29,6 +30,7 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
         private readonly Mock<IAccommodationQueryHelper> _accommodationQueryHelperMock = new Mock<IAccommodationQueryHelper>();
         private readonly Mock<IMessagePublisher> _messagePublisherMock = new Mock<IMessagePublisher>();
         private readonly Mock<IStringManager> _stringManagerMock = new Mock<IStringManager>();
+        private readonly Mock<ICatalogServiceClient> _catalogServiceClientMock = new Mock<ICatalogServiceClient>();
         private readonly Mock<ILogger> _loggerMock = new Mock<ILogger>();
 
         private readonly CreateReservationRequestHandler _handler;
@@ -49,6 +51,7 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
                 mapper,
                 _messagePublisherMock.Object,
                 _stringManagerMock.Object,
+                _catalogServiceClientMock.Object,
                 _loggerMock.Object
             );
         }
@@ -94,6 +97,10 @@ namespace ftrip.io.booking_service.unit_tests.ReservationRequests.UseCases.Creat
         {
             // Arrange
             var request = GetCreateReservationRequest();
+
+            _catalogServiceClientMock
+                .Setup(c => c.GetPriceInfo(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(new PriceInfo()));
 
             _reservationRepositoryMock
                 .Setup(r => r.HasAnyByAccomodationAndDatePeriod(It.IsAny<Guid>(), It.IsAny<DatePeriod>(), It.IsAny<CancellationToken>()))

@@ -10,6 +10,7 @@ namespace ftrip.io.booking_service.Reservations.Domain
         public Guid AccomodationId { get; set; }
         public DatePeriod DatePeriod { get; set; }
         public int GuestNumber { get; set; }
+        public decimal TotalPrice { get; set; }
         public bool IsCancelled { get; set; }
     }
 }
