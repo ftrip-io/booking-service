@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using ftrip.io.booking_service.ReservationRequests.Domain;
+﻿using ftrip.io.booking_service.ReservationRequests.Domain;
 using MediatR;
 using System;
 using System.Collections.Generic;
