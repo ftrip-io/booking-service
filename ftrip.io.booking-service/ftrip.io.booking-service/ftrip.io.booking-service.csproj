@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -12,6 +12,7 @@
 	<PackageReference Include="ftrip.io.framework.messaging" Version="2.7.0" />
 
   <PackageReference Include="ftrip.io.catalog-service.contracts" Version="1.0.0" />
+  <PackageReference Include="ftrip.io.user-service.contracts" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,7 @@
 	<ProjectReference Include="..\..\..\framework\ftrip.io.framework\ftrip.io.framework.messaging\ftrip.io.framework.messaging.csproj" />
 
   <ProjectReference Include="..\..\..\catalog-service\ftrip.io.catalog-service\ftrip.io.catalog-service.contracts\ftrip.io.catalog-service.contracts.csproj" />
+  <ProjectReference Include="..\..\..\user-service\ftrip.io.user-service\ftrip.io.user-service.contracts\ftrip.io.user-service.contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
