@@ -19,8 +19,13 @@ RUN dotnet publish -c $CONFIGURATION -o out ftrip.io.booking-service/ftrip.io.bo
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS final
 WORKDIR /app
 
-COPY --from=build /build/out .
+RUN addgroup --system ftrip-io
+RUN adduser --system booking-service
+
+COPY --from=build --chown=booking-service:ftrip-io --chmod=500 /build/out .
 
 EXPOSE 80
+
+USER booking-service
 
 ENTRYPOINT ["dotnet", "ftrip.io.booking-service.dll"]
