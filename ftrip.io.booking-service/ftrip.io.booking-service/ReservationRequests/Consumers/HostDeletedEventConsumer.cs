@@ -1,5 +1,5 @@
 ﻿using ftrip.io.booking_service.ReservationRequests.UseCases.DeleteReservationRequestsByHost;
-using ftrip.ip.user_service.contracts.Users.Events;
+using ftrip.io.user_service.contracts.Users.Events;
 using MassTransit;
 using MediatR;
 using System;
