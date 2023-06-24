@@ -12,7 +12,7 @@
 	<PackageReference Include="ftrip.io.framework.messaging" Version="2.7.0" />
 
   <PackageReference Include="ftrip.io.catalog-service.contracts" Version="1.0.0" />
-  <PackageReference Include="ftrip.io.user-service.contracts" Version="1.1.0" />
+  <PackageReference Include="ftrip.io.user-service.contracts" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>
