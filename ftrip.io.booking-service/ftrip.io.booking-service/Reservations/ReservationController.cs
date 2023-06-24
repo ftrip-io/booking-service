@@ -22,7 +22,6 @@ namespace ftrip.io.booking_service.Reservations
             _mediator = mediator;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery] ReadReservationQuery query, CancellationToken cancellationToken = default)
         {
