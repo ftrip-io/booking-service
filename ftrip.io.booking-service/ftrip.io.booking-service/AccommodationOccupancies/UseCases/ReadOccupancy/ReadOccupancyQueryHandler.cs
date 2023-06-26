@@ -72,6 +72,8 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.UseCases.ReadOccupan
             {
                 AccomodationId = r.AccomodationId,
                 DatePeriod = r.DatePeriod,
+                Guests = r.GuestNumber,
+                Price = r.TotalPrice,
                 OccupancyType = AccommodationOccupancyType.Request
             }).ToList();
 
@@ -79,6 +81,8 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.UseCases.ReadOccupan
             {
                 AccomodationId = r.AccomodationId,
                 DatePeriod = r.DatePeriod,
+                Guests = r.GuestNumber,
+                Price = r.TotalPrice,
                 OccupancyType = AccommodationOccupancyType.Reservation
             })).ToList();
         }
