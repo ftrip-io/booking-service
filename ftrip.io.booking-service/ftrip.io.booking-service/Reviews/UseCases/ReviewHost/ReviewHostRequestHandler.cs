@@ -75,7 +75,7 @@ namespace ftrip.io.booking_service.Reviews.UseCases.ReviewHost
             }
 
             var possibleAccomodationIds = (await _accommodationRepository.ReadByHostId(hostId)).ToList().Select(a => a.AccommodationId);
-            if (await _reservationRepository.HasGuestReservedAnyOfAccomodationsInPast(guestId, possibleAccomodationIds, cancellationToken))
+            if (!await _reservationRepository.HasGuestReservedAnyOfAccomodationsInPast(guestId, possibleAccomodationIds, cancellationToken))
             {
                 _logger.Error("Host can not be reviewed because the guest had never reserved any of his accommodations - GuestId[{GuestId}], HostId[{HostId}]", guestId, hostId);
                 throw new BadLogicException(_stringManager.Format("Reviews_GuestNeverReservedAnyAccomodationOfHost", guestId, hostId));
