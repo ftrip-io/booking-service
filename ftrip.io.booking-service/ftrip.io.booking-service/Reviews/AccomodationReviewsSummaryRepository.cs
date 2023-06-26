@@ -35,7 +35,7 @@ namespace ftrip.io.booking_service.Reviews
 
             var accomodationParameter = new MySqlParameter("@accomodationId", accomodationId);
             command.CommandText =
-                "Select AVG(AccomodationGrade) as AccomodationGrade, AVG(LocationGrade) as LocationGrade, AVG(ValueForMoneyGrade) as ValueForMoneyGrade, COUNT(*) as ReviewsCount " +
+                "Select IFNULL(AVG(AccomodationGrade), 0) as AccomodationGrade, IFNULL(AVG(LocationGrade), 0) as LocationGrade, IFNULL(AVG(ValueForMoneyGrade), 0) as ValueForMoneyGrade, COUNT(*) as ReviewsCount " +
                 "from AccomodationReviews " +
                 "where AccomodationId = @accomodationId and Active = 1";
             command.CommandType = CommandType.Text;

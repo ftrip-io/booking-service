@@ -33,13 +33,13 @@ namespace ftrip.io.booking_service.Reviews
         {
             using var command = _context.Database.GetDbConnection().CreateCommand();
 
-            var accomodationParameter = new MySqlParameter("@hostId", hostId);
+            var hostParameter = new MySqlParameter("@hostId", hostId);
             command.CommandText =
-                "Select AVG(CommunicationGrade) as CommunicationGrade, AVG(OverallGrade) as OverallGrade, COUNT(*) as ReviewsCount " +
+                "Select IFNULL(AVG(CommunicationGrade), 0) as CommunicationGrade, IFNULL(AVG(OverallGrade), 0) as OverallGrade, COUNT(*) as ReviewsCount " +
                 "from HostReviews " +
                 "where HostId = @hostId and Active = 1";
             command.CommandType = CommandType.Text;
-            command.Parameters.Add(accomodationParameter);
+            command.Parameters.Add(hostParameter);
 
             await _context.Database.OpenConnectionAsync();
             using var result = await command.ExecuteReaderAsync();
