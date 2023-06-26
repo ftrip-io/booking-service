@@ -7,6 +7,8 @@ namespace ftrip.io.booking_service.AccommodationOccupancies.Domain
     {
         public Guid AccomodationId { get; set; }
         public DatePeriod DatePeriod { get; set; }
+        public decimal Price { get; set; }
+        public int Guests { get; set; }
         public AccommodationOccupancyType OccupancyType { get; set; }
     }
 }
