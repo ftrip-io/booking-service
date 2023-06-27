@@ -21,7 +21,7 @@ WORKDIR /app
 
 RUN addgroup --system ftrip-io && adduser --system booking-service
 
-COPY --from=build --chown=booking-service:ftrip-io --chmod=777 /build/out .
+COPY --from=build --chown=booking-service:ftrip-io --chmod=500 /build/out .
 
 EXPOSE 80
 
